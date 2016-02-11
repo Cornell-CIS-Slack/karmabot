@@ -30,7 +30,7 @@ module.exports = (robot) ->
     robot.brain.set user, count
     msg.send "@#{user}-- [ouch! now at #{count}]"
 
-  robot.hear ///#{botname}\s+(leader|shame)board\s*([0-9]+|all)?///i, (msg) ->
+  robot.respond ///(leader|shame)board\s*([0-9]+|all)?///i, (msg) ->
     users = robot.brain.data._private
     tuples = []
     for username, score of users
@@ -71,7 +71,7 @@ module.exports = (robot) ->
       str += "##{i+1}\t[#{points} " + point_label + "] #{formatted_name}" + leader + newline
     msg.send(str)
 
-  robot.hear ///#{botname}:?\s+help///i, (msg) -> 
+  robot.respond ///help///i, (msg) -> 
         add_spaces = (m) -> m + "\u200A"
         formatted_owner = owner.replace(/\S/g, add_spaces).trim()
         help_msg  = "Usage:\n"
@@ -87,7 +87,7 @@ module.exports = (robot) ->
         help_msg += "If you have any other questions, please ask my owner, @" + formatted_owner + "!"
         msg.send(help_msg)
 
-  robot.hear ///#{botname}\s+karma\s+of\s+@([a-z0-9_\-\.]+)///i, (msg) ->
+  robot.respond ///karma\s+of\s+@([a-z0-9_\-\.]+)///i, (msg) ->
         user = msg.match[1].replace(/\-+$/g, '')
         count = robot.brain.get(user) or 0
         msg.send "@#{user} has #{count} karma!"
