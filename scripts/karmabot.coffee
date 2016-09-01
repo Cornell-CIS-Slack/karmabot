@@ -91,3 +91,14 @@ module.exports = (robot) ->
         user = msg.match[1].replace(/\-+$/g, '')
         count = robot.brain.get(user) or 0
         msg.send "@#{user} has #{count} karma!"
+
+  # Don't include the # for the channel name.
+  welcome_channel = "upbot-test"
+  welcome_message = "Hi, this is a generic welcome message from the bot!"
+
+  # Allow for a welcome message to be sent to new users in the slack based on
+  # the above settings for the channel and message.
+  robot.enter (res) ->
+        msg = res.message
+        if msg.room == welcome_channel
+          robot.send {room: res.message.user.name}, welcome_message
