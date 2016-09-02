@@ -100,5 +100,6 @@ module.exports = (robot) ->
   # the above settings for the channel and message.
   robot.enter (res) ->
         msg = res.message
+        username = res.message.user.name
         if msg.room == welcome_channel
-          robot.send {room: res.message.user.name}, welcome_message
+          robot.send { room: username, channel: username }, welcome_message
