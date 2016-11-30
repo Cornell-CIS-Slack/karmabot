@@ -83,7 +83,7 @@ module.exports = (robot) ->
         help_msg += "\tupbot shameboard [n] -- list bottom n names; n defaults to 10\n"
         help_msg += "\tupbot karma of @<name> -- list @<name>'s karma\n"
         help_msg += "\n"
-        help_msg += "My code can be found at https://github.com/Cornell-CIS-Slack/karmabot, please feel free to submit pull requests!\n"
+        help_msg += "My code can be found at https://github.com/Cornell-CIS-Slack/upbot, please feel free to submit pull requests!\n"
         help_msg += "If you have any other questions, please ask my owner, @" + formatted_owner + "!"
         msg.send(help_msg)
 
@@ -93,8 +93,19 @@ module.exports = (robot) ->
         msg.send "@#{user} has #{count} karma!"
 
   # Don't include the # for the channel name.
-  welcome_channel = "upbot-test"
-  welcome_message = "Hi, this is a generic welcome message from the bot!"
+  welcome_channel = "general"
+  welcome_message = """
+*On behalf of the CS PhD students, welcome to Cornell CIS Slack!*
+
+I'm @upbot, a bot managed by @tmagrino for tracking meaningless internet karma points in the Cornell CIS Slack.
+
+Here are a few friendly pointers for new users that you might want to know:
+- We have many different channels for activities ranging from ithaca lunch to board game night. *Type `/open` or click the Channels heading on the sidebar to see a full channel list.* In particular, you may be interested in #bulletin_board for widespread departmental announcements, #advice for general advice like help choosing classes or picking an advisor, or #cute_animals for when you want to see and share pictures of cute animals!
+- Be sure to *edit your notification settings* so you're not overwhelmed. To do this, type `/prefs` to change global notification settings, or go to a specific channel and click the :bell: icon.
+- If you want to learn more about @upbot (that's me!), use the message `upbot help` for a summary of what I can do.
+
+Enjoy, and let the karma flow!
+"""
 
   # Allow for a welcome message to be sent to new users in the slack based on
   # the above settings for the channel and message.
