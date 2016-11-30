@@ -68,7 +68,7 @@ module.exports = (robot) ->
       leader = if i == 0 then leader_message else ""
       newline = if i < Math.min(leaderboard_maxlen, tuples.length) - 1 then '\n' else ''
       formatted_name = username.replace(/\S/g, add_spaces).trim()
-      str += "##{i+1}\t[#{points} " + point_label + "] #{formatted_name}" + leader + newline
+      str += "##{i+1}\t[#{points} #{point_label}] #{formatted_name}" + leader + newline
     msg.send(str)
 
   robot.respond ///help///i, (msg) -> 
@@ -76,15 +76,15 @@ module.exports = (robot) ->
         formatted_owner = owner.replace(/\S/g, add_spaces).trim()
         help_msg  = "Usage:\n"
         help_msg += "\n"
-        help_msg += "\tupbot help -- show this message\n"
+        help_msg += "\t#{botname} help -- show this message\n"
         help_msg += "\t@<name>++ -- upvote <name>\n"
         help_msg += "\t@<name>-- -- downvote name\n"
-        help_msg += "\tupbot leaderboard [n] -- list top n names; n defaults to 10\n"
-        help_msg += "\tupbot shameboard [n] -- list bottom n names; n defaults to 10\n"
-        help_msg += "\tupbot karma of @<name> -- list @<name>'s karma\n"
+        help_msg += "\t#{botname} leaderboard [n] -- list top n names; n defaults to 10\n"
+        help_msg += "\t#{botname} shameboard [n] -- list bottom n names; n defaults to 10\n"
+        help_msg += "\t#{botname} karma of @<name> -- list @<name>'s karma\n"
         help_msg += "\n"
         help_msg += "My code can be found at https://github.com/Cornell-CIS-Slack/upbot, please feel free to submit pull requests!\n"
-        help_msg += "If you have any other questions, please ask my owner, @" + formatted_owner + "!"
+        help_msg += "If you have any other questions, please ask my owner, @#{formatted_owner}!"
         msg.send(help_msg)
 
   robot.respond ///karma\s+of\s+@([a-z0-9_\-\.]+)///i, (msg) ->
@@ -97,12 +97,12 @@ module.exports = (robot) ->
   welcome_message = """
 *On behalf of the CS PhD students, welcome to Cornell CIS Slack!*
 
-I'm @upbot, a bot managed by @tmagrino for tracking meaningless internet karma points in the Cornell CIS Slack.
+I'm @#{botname}, a bot managed by @#{owner} for tracking meaningless internet karma points in the Cornell CIS Slack.
 
 Here are a few friendly pointers for new users that you might want to know:
 - We have many different channels for activities ranging from ithaca lunch to board game night. *Type `/open` or click the Channels heading on the sidebar to see a full channel list.* In particular, you may be interested in #bulletin_board for widespread departmental announcements, #advice for general advice like help choosing classes or picking an advisor, or #cute_animals for when you want to see and share pictures of cute animals!
 - Be sure to *edit your notification settings* so you're not overwhelmed. To do this, type `/prefs` to change global notification settings, or go to a specific channel and click the :bell: icon.
-- If you want to learn more about @upbot (that's me!), use the message `upbot help` for a summary of what I can do.
+- If you want to learn more about @{botname} (that's me!), use the message `#{botname} help` for a summary of what I can do.
 
 Enjoy, and let the karma flow!
 """
