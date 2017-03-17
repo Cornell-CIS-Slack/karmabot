@@ -12,27 +12,24 @@ module.exports = (robot) ->
 
   upvote_reacts = ["+1", "thumbsup", "thumbsup_all", "beer"]
   downvote_reacts = ["-1", "thumbsdown", "middle_finger"]
+  add_spaces = (m) -> m + "\u200A"
 
   # User being voted on, message that caused this vote
   handle_upvote = (user, msg) ->
     if msg.message.user.name == user
-      response_msg = "@" + user
-      response_msg += ", you can't add to your own karma!"
-      msg.send response_msg
+      msg.send "@#{user}, you can't add to your own karma!"
     else
       count = (robot.brain.get(user) or 0) + 1
       robot.brain.set user, count
-      msg.send "@#{user}++ [woot! now at #{count}]"
+      msg.send "@#{add_spaces(user)}++ [woot! now at #{count}]"
 
   # User being voted on, message that caused this vote
   handle_downvote = (user, msg) ->
     if msg.message.user.name == user
-      response_msg = "@" + user
-      response_msg += ", you are a silly goose and downvoted yourself!"
-      msg.send response_msg
+      msg.send "@#{user}, you are a silly goose and downvoted yourself!"
     count = (robot.brain.get(user) or 0) - 1
     robot.brain.set user, count
-    msg.send "@#{user}-- [ouch! now at #{count}]"
+    msg.send "@#{add_space(user)}-- [ouch! now at #{count}]"
 
   robot.react (res) ->
     rea = res.message
@@ -83,7 +80,6 @@ module.exports = (robot) ->
       else if requested_count == "all" then tuples.length\
       else +requested_count
     str = ''
-    add_spaces = (m) -> m + "\u200A"
     leader_message = if msg.match[1] == "shame"
       " (All shame the supreme loser!)"
     else
@@ -99,7 +95,6 @@ module.exports = (robot) ->
     msg.send(str)
 
   robot.respond ///help///i, (msg) ->
-        add_spaces = (m) -> m + "\u200A"
         formatted_owner = owner.replace(/\S/g, add_spaces).trim()
         help_msg  = "Usage:\n"
         help_msg += "\n"
