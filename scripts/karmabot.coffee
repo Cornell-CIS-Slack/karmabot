@@ -16,35 +16,42 @@ module.exports = (robot) ->
   downvote_reacts = ["--", "downvote", "middle_finger"]
   nonnotifying = (name) -> name.replace(/\S/g, (m) -> m + "\u200A").trim()
 
-  # User being voted on, message that caused this vote
-  handle_upvote = (user, msg) ->
+  # User being voted on, message that caused this vote, list of additional stuff to add to the end of the message.
+  handle_upvote = (user, msg, optionals...) ->
+    notification = ""
     if msg.message.user.name == user
-      msg.send "@#{user}, you can't add to your own karma!"
+      notification += "@#{user}, you can't add to your own karma!"
     else
       count = (robot.brain.get(user) or 0) + 1
       robot.brain.set user, count
-      msg.send "@#{nonnotifying(user)}++ [woot! now at #{count}]"
+      notification += "@#{nonnotifying(user)}++ [woot! now at #{count}]"
+    notification += optionals.map((x) -> " " + x)
+    msg.send notification
 
   # User being voted on, message that caused this vote
-  handle_downvote = (user, msg) ->
+  handle_downvote = (user, msg, optionals...) ->
+    notification = ""
     if msg.message.user.name == user
-      msg.send "@#{user}, you are a silly goose and downvoted yourself!"
+      notification += "@#{user}, you are a silly goose and downvoted yourself!\n"
     count = (robot.brain.get(user) or 0) - 1
     robot.brain.set user, count
-    msg.send "@#{nonnotifying(user)}-- [ouch! now at #{count}]"
+    notification += "@#{nonnotifying(user)}-- [ouch! now at #{count}]"
+    notification += optionals.map((x) -> " " + x)
+    msg.send notification
 
   robot.react (res) ->
     rea = res.message
     # Handle the way skin tone modifiers work in the emojis
     reaction = rea.reaction.split(":")[0]
+    voter = nonnotifying(res.message.user.name)
     # Add karma if someone reacts positive or removes a negative reaction
     # Remove karma if someone reacts negative or removes a positive reaction
     if ((reaction in upvote_reacts and rea.type == "added") or
         (reaction in downvote_reacts and rea.type == "removed"))
-      handle_upvote(rea.item_user.name, res)
+      handle_upvote(rea.item_user.name, res, "(:#{rea.reaction}: #{rea.type} by #{voter})")
     if ((reaction in downvote_reacts and rea.type == "added") or
         (reaction in upvote_reacts and rea.type == "removed"))
-      handle_downvote(rea.item_user.name, res)
+      handle_downvote(rea.item_user.name, res, "(:#{rea.reaction}: #{rea.type} by #{voter})")
 
   robot.hear ///@([a-z0-9_\-\.]+)\+{2,}///i, (msg) ->
     user = msg.match[1].replace(/\-+$/g, '')
