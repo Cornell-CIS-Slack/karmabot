@@ -17,7 +17,7 @@ module.exports = (robot) ->
   nonnotifying = (name) -> name.replace(/\S/g, (m) -> m + "\u200A").trim()
 
   # User being voted on, message that caused this vote, list of additional stuff to add to the end of the message.
-  handle_upvote = (user, msg, optionals...) ->
+  handle_upvote = (user, ts, msg, optionals...) ->
     notification = ""
     if msg.message.user.name == user
       notification += "@#{user}, you can't add to your own karma!"
@@ -26,10 +26,10 @@ module.exports = (robot) ->
       robot.brain.set user, count
       notification += "@#{nonnotifying(user)}++ [woot! now at #{count}]"
     notification += optionals.map((x) -> " " + x)
-    msg.send notification
+    msg.send {text: notification, thread_ts: ts}
 
   # User being voted on, message that caused this vote
-  handle_downvote = (user, msg, optionals...) ->
+  handle_downvote = (user, ts, msg, optionals...) ->
     notification = ""
     if msg.message.user.name == user
       notification += "@#{user}, you are a silly goose and downvoted yourself!\n"
@@ -37,7 +37,7 @@ module.exports = (robot) ->
     robot.brain.set user, count
     notification += "@#{nonnotifying(user)}-- [ouch! now at #{count}]"
     notification += optionals.map((x) -> " " + x)
-    msg.send notification
+    msg.send {text: notification, thread_ts: ts}
 
   robot.react (res) ->
     rea = res.message
@@ -48,14 +48,14 @@ module.exports = (robot) ->
     # Remove karma if someone reacts negative or removes a positive reaction
     if ((reaction in upvote_reacts and rea.type == "added") or
         (reaction in downvote_reacts and rea.type == "removed"))
-      handle_upvote(rea.item_user.name, res, "(:#{rea.reaction}: #{rea.type} by #{voter})")
+      handle_upvote(rea.item_user.name, rea.item.ts, res, "(:#{rea.reaction}: #{rea.type} by #{voter})")
     if ((reaction in downvote_reacts and rea.type == "added") or
         (reaction in upvote_reacts and rea.type == "removed"))
-      handle_downvote(rea.item_user.name, res, "(:#{rea.reaction}: #{rea.type} by #{voter})")
+      handle_downvote(rea.item_user.name, rea.item.ts, res, "(:#{rea.reaction}: #{rea.type} by #{voter})")
 
   robot.hear ///@([a-z0-9_\-\.]+)\+{2,}///i, (msg) ->
     user = msg.match[1].replace(/\-+$/g, '')
-    handle_upvote(user, msg)
+    handle_upvote(user, msg.message.thread_ts, msg)
 
   robot.hear ///kick\s+jed///i, (msg) ->
     user = "jed"
@@ -63,7 +63,7 @@ module.exports = (robot) ->
 
   robot.hear ///@([a-z0-9_\-\.]+)\-{2,}///i, (msg) ->
     user = msg.match[1].replace(/\-+$/g, '')
-    handle_downvote(user, msg)
+    handle_downvote(user, msg.message.thread_ts, msg)
 
   robot.respond ///(leader|shame)board\s*([0-9]+|all)?///i, (msg) ->
     users = robot.brain.data._private
