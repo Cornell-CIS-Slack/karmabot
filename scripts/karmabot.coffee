@@ -10,8 +10,8 @@ module.exports = (robot) ->
   owner = process.env.HUBOT_SLACK_OWNERNAME
   token = process.env.HUBOT_SLACK_TOKEN
 
-  upvote_reacts = ["+1", "thumbsup", "thumbsup_all"]
-  downvote_reacts = ["-1", "thumbsdown"]
+  upvote_reacts = ["+1", "thumbsup", "thumbsup_all", "beer"]
+  downvote_reacts = ["-1", "thumbsdown", "middle_finger"]
 
   # User being voted on, message that caused this vote
   handle_upvote = (user, msg) ->
@@ -41,7 +41,7 @@ module.exports = (robot) ->
     if ((rea.reaction in upvote_reacts and rea.type == "added") or
         (rea.reaction in downvote_reacts and rea.type == "removed"))
       handle_upvote(rea.item_user.name, res)
-    else if ((rea.reaction in downvote_reacts and rea.type == "added") or
+    if ((rea.reaction in downvote_reacts and rea.type == "added") or
              (rea.reaction in upvote_reacts and rea.type == "removed"))
       handle_downvote(rea.item_user.name, res)
 
@@ -140,5 +140,5 @@ Enjoy, and let the karma flow!
         msg = res.message
         username = res.message.user.name
         if msg.room == welcome_channel
-	  console.log("#{username} welcomed.")
+          console.log("#{username} welcomed.")
           robot.send { room: username, channel: username }, welcome_message
