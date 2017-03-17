@@ -10,8 +10,10 @@ module.exports = (robot) ->
   owner = process.env.HUBOT_SLACK_OWNERNAME
   token = process.env.HUBOT_SLACK_TOKEN
 
-  upvote_reacts = ["+1", "thumbsup", "thumbsup_all", "beer", "parrot", "beers"]
-  downvote_reacts = ["-1", "thumbsdown", "middle_finger"]
+  #upvote_reacts = ["+1", "thumbsup", "thumbsup_all", "beer", "parrot", "beers"]
+  upvote_reacts = ["++", "upvote", "beer", "beers"]
+  #downvote_reacts = ["-1", "thumbsdown", "middle_finger"]
+  downvote_reacts = ["--", "downvote", "middle_finger"]
   nonnotifying = (name) -> name.replace(/\S/g, (m) -> m + "\u200A").trim()
 
   # User being voted on, message that caused this vote
