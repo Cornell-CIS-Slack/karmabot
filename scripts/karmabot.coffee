@@ -29,7 +29,7 @@ module.exports = (robot) ->
       msg.send "@#{user}, you are a silly goose and downvoted yourself!"
     count = (robot.brain.get(user) or 0) - 1
     robot.brain.set user, count
-    msg.send "@#{add_space(user)}-- [ouch! now at #{count}]"
+    msg.send "@#{add_spaces(user)}-- [ouch! now at #{count}]"
 
   robot.react (res) ->
     rea = res.message
