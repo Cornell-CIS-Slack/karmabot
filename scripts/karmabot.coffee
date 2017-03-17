@@ -12,7 +12,7 @@ module.exports = (robot) ->
 
   upvote_reacts = ["+1", "thumbsup", "thumbsup_all", "beer"]
   downvote_reacts = ["-1", "thumbsdown", "middle_finger"]
-  add_spaces = (m) -> m + "\u200A"
+  nonnotifying = (name) -> name.replace(/\S/g, (m) -> m + "\u200A").trim()
 
   # User being voted on, message that caused this vote
   handle_upvote = (user, msg) ->
@@ -21,7 +21,7 @@ module.exports = (robot) ->
     else
       count = (robot.brain.get(user) or 0) + 1
       robot.brain.set user, count
-      msg.send "@#{add_spaces(user)}++ [woot! now at #{count}]"
+      msg.send "@#{nonnotifying(user)}++ [woot! now at #{count}]"
 
   # User being voted on, message that caused this vote
   handle_downvote = (user, msg) ->
@@ -29,7 +29,7 @@ module.exports = (robot) ->
       msg.send "@#{user}, you are a silly goose and downvoted yourself!"
     count = (robot.brain.get(user) or 0) - 1
     robot.brain.set user, count
-    msg.send "@#{add_spaces(user)}-- [ouch! now at #{count}]"
+    msg.send "@#{nonnotifying(user)}-- [ouch! now at #{count}]"
 
   robot.react (res) ->
     rea = res.message
@@ -90,12 +90,12 @@ module.exports = (robot) ->
       point_label = if points == 1 then "point" else "points"
       leader = if i == 0 then leader_message else ""
       newline = if i < Math.min(leaderboard_maxlen, tuples.length) - 1 then '\n' else ''
-      formatted_name = username.replace(/\S/g, add_spaces).trim()
+      formatted_name = nonnotifying(username)
       str += "##{i+1}\t[#{points} #{point_label}] #{formatted_name}" + leader + newline
     msg.send(str)
 
   robot.respond ///help///i, (msg) ->
-        formatted_owner = owner.replace(/\S/g, add_spaces).trim()
+        formatted_owner = nonnotifying(owner)
         help_msg  = "Usage:\n"
         help_msg += "\n"
         help_msg += "\t#{botname} help -- show this message\n"
