@@ -33,13 +33,15 @@ module.exports = (robot) ->
 
   robot.react (res) ->
     rea = res.message
+    # Handle the way skin tone modifiers work in the emojis
+    reaction = rea.reaction.split(":")[0]
     # Add karma if someone reacts positive or removes a negative reaction
     # Remove karma if someone reacts negative or removes a positive reaction
-    if ((rea.reaction in upvote_reacts and rea.type == "added") or
-        (rea.reaction in downvote_reacts and rea.type == "removed"))
+    if ((reaction in upvote_reacts and rea.type == "added") or
+        (reaction in downvote_reacts and rea.type == "removed"))
       handle_upvote(rea.item_user.name, res)
-    if ((rea.reaction in downvote_reacts and rea.type == "added") or
-             (rea.reaction in upvote_reacts and rea.type == "removed"))
+    if ((reaction in downvote_reacts and rea.type == "added") or
+        (reaction in upvote_reacts and rea.type == "removed"))
       handle_downvote(rea.item_user.name, res)
 
   robot.hear ///@([a-z0-9_\-\.]+)\+{2,}///i, (msg) ->
