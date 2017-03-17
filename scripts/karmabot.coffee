@@ -11,7 +11,7 @@ module.exports = (robot) ->
   token = process.env.HUBOT_SLACK_TOKEN
 
   #upvote_reacts = ["+1", "thumbsup", "thumbsup_all", "beer", "parrot", "beers"]
-  upvote_reacts = ["++", "upvote", "beer", "beers"]
+  upvote_reacts = ["++", "upvote", "parrot", "beer", "beers"]
   #downvote_reacts = ["-1", "thumbsdown", "middle_finger"]
   downvote_reacts = ["--", "downvote", "middle_finger"]
   nonnotifying = (name) -> name.replace(/\S/g, (m) -> m + "\u200A").trim()
