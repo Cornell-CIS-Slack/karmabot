@@ -8,9 +8,13 @@
 module.exports = (robot) ->
   botname = process.env.HUBOT_SLACK_BOTNAME
   owner = process.env.HUBOT_SLACK_OWNERNAME
+  token = process.env.HUBOT_SLACK_TOKEN
 
-  robot.hear ///@([a-z0-9_\-\.]+)\+{2,}///i, (msg) ->
-    user = msg.match[1].replace(/\-+$/g, '')
+  upvote_reacts = ["+1", "thumbsup", "thumbsup_all"]
+  downvote_reacts = ["-1", "thumbsdown"]
+
+  # User being voted on, message that caused this vote
+  handle_upvote = (user, msg) ->
     if msg.message.user.name == user
       response_msg = "@" + user
       response_msg += ", you can't add to your own karma!"
@@ -20,8 +24,8 @@ module.exports = (robot) ->
       robot.brain.set user, count
       msg.send "@#{user}++ [woot! now at #{count}]"
 
-  robot.hear ///@([a-z0-9_\-\.]+)\-{2,}///i, (msg) ->
-    user = msg.match[1].replace(/\-+$/g, '')
+  # User being voted on, message that caused this vote
+  handle_downvote = (user, msg) ->
     if msg.message.user.name == user
       response_msg = "@" + user
       response_msg += ", you are a silly goose and downvoted yourself!"
@@ -29,6 +33,29 @@ module.exports = (robot) ->
     count = (robot.brain.get(user) or 0) - 1
     robot.brain.set user, count
     msg.send "@#{user}-- [ouch! now at #{count}]"
+
+  robot.react (res) ->
+    rea = res.message
+    # Add karma if someone reacts positive or removes a negative reaction
+    # Remove karma if someone reacts negative or removes a positive reaction
+    if ((rea.reaction in upvote_reacts and rea.type == "added") or
+        (rea.reaction in downvote_reacts and rea.type == "removed"))
+      handle_upvote(rea.item_user.name, res)
+    else if ((rea.reaction in downvote_reacts and rea.type == "added") or
+             (rea.reaction in upvote_reacts and rea.type == "removed"))
+      handle_downvote(rea.item_user.name, res)
+
+  robot.hear ///@([a-z0-9_\-\.]+)\+{2,}///i, (msg) ->
+    user = msg.match[1].replace(/\-+$/g, '')
+    handle_upvote(user, msg)
+
+  robot.hear ///kick\s+jed///i, (msg) ->
+    user = "jed"
+    msg.send "/remove @#{user}"
+
+  robot.hear ///@([a-z0-9_\-\.]+)\-{2,}///i, (msg) ->
+    user = msg.match[1].replace(/\-+$/g, '')
+    handle_downvote(user, msg)
 
   robot.respond ///(leader|shame)board\s*([0-9]+|all)?///i, (msg) ->
     users = robot.brain.data._private
@@ -71,7 +98,7 @@ module.exports = (robot) ->
       str += "##{i+1}\t[#{points} #{point_label}] #{formatted_name}" + leader + newline
     msg.send(str)
 
-  robot.respond ///help///i, (msg) -> 
+  robot.respond ///help///i, (msg) ->
         add_spaces = (m) -> m + "\u200A"
         formatted_owner = owner.replace(/\S/g, add_spaces).trim()
         help_msg  = "Usage:\n"
@@ -113,4 +140,5 @@ Enjoy, and let the karma flow!
         msg = res.message
         username = res.message.user.name
         if msg.room == welcome_channel
+	  console.log("#{username} welcomed.")
           robot.send { room: username, channel: username }, welcome_message
