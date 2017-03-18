@@ -65,7 +65,8 @@ module.exports = (robot) ->
     user = msg.match[1].replace(/\-+$/g, '')
     handle_downvote(user, msg.message.thread_ts, msg)
 
-  robot.respond ///(leader|shame)board\s*([0-9]+|all)?///i, (msg) ->
+  leaderboard_handler = (msg) ->
+    console.log("THIS IS RUNNING")
     users = robot.brain.data._private
     tuples = []
     for username, score of users
@@ -104,6 +105,10 @@ module.exports = (robot) ->
       formatted_name = nonnotifying(username)
       str += "##{i+1}\t[#{points} #{point_label}] #{formatted_name}" + leader + newline
     msg.send(str)
+
+  robot.hear ///show\s(leader|shame)board\s*([0-9]+|all)?///i, leaderboard_handler
+
+  robot.respond ///(leader|shame)board\s*([0-9]+|all)?///i, leaderboard_handler
 
   robot.respond ///help///i, (msg) ->
         formatted_owner = nonnotifying(owner)
