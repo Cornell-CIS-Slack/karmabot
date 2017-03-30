@@ -14,7 +14,7 @@ module.exports = (robot) ->
   upvote_reacts = ["++", "upvote", "parrot", "beer", "beers"]
   #downvote_reacts = ["-1", "thumbsdown", "middle_finger"]
   downvote_reacts = ["--", "downvote", "middle_finger"]
-  nonnotifying = (name) -> name.replace(/\S/g, (m) -> m + "\u200A").trim()
+  nonnotifying = (name) -> "\u200A" + name.replace(/\S/g, (m) -> m + "\u200A").trim()
 
   # User being voted on, message that caused this vote, list of additional stuff to add to the end of the message.
   handle_upvote = (user, ts, msg, optionals...) ->
