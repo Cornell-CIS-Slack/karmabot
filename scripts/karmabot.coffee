@@ -10,10 +10,10 @@ module.exports = (robot) ->
   owner = process.env.HUBOT_SLACK_OWNERNAME
   token = process.env.HUBOT_SLACK_TOKEN
 
-  #upvote_reacts = ["+1", "thumbsup", "thumbsup_all", "beer", "parrot", "beers"]
-  upvote_reacts = ["++", "upvote", "parrot", "beer", "beers"]
-  #downvote_reacts = ["-1", "thumbsdown", "middle_finger"]
-  downvote_reacts = ["--", "downvote", "middle_finger"]
+  # upvote_reacts = ["++", "upvote"] # Insert your upvote indicators.
+  upvote_reacts = ["++", "upvote"]
+  # downvote_reacts = ["--", "downvote"] # Insert your downvote indicators.
+  downvote_reacts = ["--", "downvote"]
   nonnotifying = (name) -> "\u200A" + name.replace(/\S/g, (m) -> m + "\u200A").trim()
 
   # User being voted on, message that caused this vote, list of additional stuff to add to the end of the message.
@@ -46,11 +46,9 @@ module.exports = (robot) ->
     voter = nonnotifying(res.message.user.name)
     # Add karma if someone reacts positive or removes a negative reaction
     # Remove karma if someone reacts negative or removes a positive reaction
-    if ((reaction in upvote_reacts and rea.type == "added") or
-        (reaction in downvote_reacts and rea.type == "removed"))
+    if (reaction in upvote_reacts and rea.type == "added")
       handle_upvote(rea.item_user.name, rea.item.ts, res, "(:#{rea.reaction}: #{rea.type} by #{voter})")
-    if ((reaction in downvote_reacts and rea.type == "added") or
-        (reaction in upvote_reacts and rea.type == "removed"))
+    if (reaction in downvote_reacts and rea.type == "added")
       handle_downvote(rea.item_user.name, rea.item.ts, res, "(:#{rea.reaction}: #{rea.type} by #{voter})")
 
   robot.hear ///@([a-z0-9_\-\.]+)\+{2,}///i, (msg) ->
